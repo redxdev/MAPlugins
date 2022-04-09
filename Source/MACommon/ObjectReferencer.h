@@ -4,8 +4,6 @@
 
 #include "CoreMinimal.h"
 
-#define MA_REF_PASTE(x, y) x ## y
-
 // Use existing local UObject pointers as strong pointers for the duration of the current scope.
 #define MA_STRONG_REF(...) const MACommon::Private::FStrongReferencer PREPROCESSOR_JOIN(__scoped_strong_ref_, __LINE__)(__VA_ARGS__)
 
@@ -38,14 +36,6 @@ namespace MACommon::Private
 			InitObjectReference(reinterpret_cast<UObject*&>(InObject));
 			InitializeReferences(Args...);
 		}
-	
-		void InitObjectReference(UObject*& InObject)
-		{
-			if (InObject != nullptr)
-			{
-				Objects.Add(std::addressof(InObject));
-			}
-		}
 
 		template<typename TFirst, typename... TArgs, typename = TEnableIf<std::is_base_of_v<UObject, TFirst>>>
 		[[deprecated("TObjectPtr is not well-supported and should not be used with object referencers in at this time.")]]
@@ -62,6 +52,14 @@ namespace MACommon::Private
 		}
 
 		void InitializeReferences() {}
+		
+		void InitObjectReference(UObject*& InObject)
+		{
+			if (InObject != nullptr)
+			{
+				Objects.Add(std::addressof(InObject));
+			}
+		}
 	};
 	
 	class MACOMMON_API FStrongReferencer : public FBaseReferencer, public FGCObject
