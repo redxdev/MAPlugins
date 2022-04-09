@@ -43,14 +43,16 @@ namespace MACommon::Private
 		{
 			if (InObject != nullptr)
 			{
-				Objects.Add(&InObject);
+				Objects.Add(std::addressof(InObject));
 			}
 		}
-		
+
 		template<typename TFirst, typename... TArgs, typename = TEnableIf<std::is_base_of_v<UObject, TFirst>>>
+		[[deprecated("TObjectPtr is not well-supported and should not be used with object referencers in at this time.")]]
 		void InitializeReferences(TObjectPtr<TFirst>& InObject, TArgs&... Args)
 		{
 			// Possible bug: object isn't resolved but will be later
+			// This is why this method is marked as deprecated (for now).
 			if (IsObjectHandleResolved(InObject.GetHandle()))
 			{
 				InitObjectReference(reinterpret_cast<UObject*&>(InObject));
