@@ -59,3 +59,61 @@ FAsyncCoroutine UMyFunctionLibrary::MyLatentCoroutine(UObject* MyFirstObject, UO
     }
 }
 ```
+
+## UE5Coro
+
+Various utilities that can be used when [UE5Coro](https://github.com/landelare/ue5coro) is installed and enabled.
+
+**Note:** This code currently expects you to use [this](https://github.com/redxdev/ue5coro) fork. Once some additional changes have made
+their way into the main repository then MACommon will be updated to use @landelare's version instead.
+
+### Latent Callbacks
+
+Macros in the style of `ON_SCOPE_EXIT` to support various situations where latent coroutines are exited.
+**These macros only work with latent coroutines, not normal latent actions.**
+
+#### MA_ON_LATENT_ABORT
+
+Called when the latent action is cancelled. Equivalent to overriding `FPendingLatentAction::NotifyActionAborted`.
+
+```c++
+MA_ON_LATENT_ABORT
+{
+    UE_LOG(LogTemp, Display, TEXT("This latent action was cancelled."));
+};
+```
+
+#### MA_ON_LATENT_DESTROY
+
+Called when the callback object for the latent action has been destroyed. This is called *after* the object's destruction, so do not try
+to access it. Equivalent to overriding `FPendingLatentAction::NotifyObjectDestroyed`.
+
+```c++
+MA_ON_LATENT_DESTROY
+{
+    UE_LOG(LogTemp, Display, TEXT("The callback target of this latent action was destroyed."));
+};
+```
+
+#### MA_ON_ABNORMAL_EXIT
+
+Called when either of the above events (action abort or object destruction) occurs.
+
+```c++
+MA_ON_LATENT_ABNORMAL_EXIT
+{
+    UE_LOG(LogTemp, Display, TEXT("Either the callback target of this latent action was destroyed or the action was cancelled."));
+};
+```
+
+#### MA_ON_LATENT_EXIT
+
+Called when the latent action ends for any reason (including successful completion). Equivalent to `ON_SCOPE_EXIT`, included simply for consistency
+with the other macros.
+
+```c++
+MA_ON_LATENT_EXIT
+{
+    UE_LOG(LogTemp, Display, TEXT("The latent action has exited."));
+};
+```

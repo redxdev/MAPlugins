@@ -16,11 +16,19 @@
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "MACommonObjectUtils",
+			"Name": "MACommon",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
+				"UE5Coro"
 			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "UE5Coro",
+			"Enabled": true,
+			"Optional": true
 		}
 	]
 }
