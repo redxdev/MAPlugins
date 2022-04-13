@@ -64,9 +64,6 @@ FAsyncCoroutine UMyFunctionLibrary::MyLatentCoroutine(UObject* MyFirstObject, UO
 
 Various utilities that can be used when [UE5Coro](https://github.com/landelare/ue5coro) is installed and enabled.
 
-**Note:** This code currently expects you to use [this](https://github.com/redxdev/ue5coro) fork. Once some additional changes have made
-their way into the main repository then MACommon will be updated to use @landelare's version instead.
-
 ### Latent Callbacks
 
 Macros in the style of `ON_SCOPE_EXIT` to support various situations where latent coroutines are exited.
