@@ -114,3 +114,11 @@ MA_ON_LATENT_EXIT
     UE_LOG(LogTemp, Display, TEXT("The latent action has exited."));
 };
 ```
+
+### "Until" Macro
+
+Simple macro wrapper around `UE5Coro::Latent::Until` to simplify the syntax.
+
+```c++
+co_await MA_LATENT_UNTIL(bSomeVariable); // checks bSomeVariable every frame until it is true.
+```

@@ -25,6 +25,7 @@ public class MACommon : ModuleRules
 		{
 			PublicDependencyModuleNames.Add("UE5Coro");
 			PublicDefinitions.Add("WITH_MA_COROUTINES=1");
+			CppStandard = CppStandardVersion.Cpp20;
 		}
 	}
 }
