@@ -1,6 +1,11 @@
-# MACommon: A grab bag of common utilities.
+# A grab bag of project-agnostic plugins
 
-This is my catch-all library for project-agnostic utilities in Unreal Engine 5.
+This is a set of plugins that can be used in Unreal Engine 5. The plugins do not depend on each other unless otherwise
+specified - you can use them individually.
+
+# MACommon
+
+This contains common C++ utilities that I have found useful and don't really fit into plugins of their own.
 
 ## Object Referencers
 
