@@ -134,4 +134,4 @@ A lightweight alternative to the Gameplay Ability System (GAS). Nothing but a si
 without built-in multiplayer, executions, attribute sets, effects, etc. Designed for those who like the basic functions of abilities but don't want
 any of the extra complexity.
 
-Documentation forthcoming.
+Documentation forthcoming. Requires both MACommon and [UE5Coro](https://github.com/landelare/ue5coro) to be installed.
