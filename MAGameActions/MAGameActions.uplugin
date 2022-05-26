@@ -1,0 +1,47 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "0.1.0",
+	"FriendlyName": "MAGameActions",
+	"Description": "A simple action and ability system, as an alternative to GAS.",
+	"Category": "Other",
+	"CreatedBy": "MissiveArts LLC",
+	"CreatedByURL": "https://xbloom.io",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": false,
+	"IsBetaVersion": true,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "MAGameActions",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"GameplayTags",
+				"UE5Coro",
+				"MACommon"
+			]
+		},
+		{
+			"Name": "MAGameActionsEditor",
+			"Type": "UncookedOnly",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"MAGameActions"
+			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "UE5Coro",
+			"Enabled": true
+		},
+		{
+			"Name": "MACommon",
+			"Enabled": true
+		}
+	]
+}

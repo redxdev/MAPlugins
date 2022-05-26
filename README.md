@@ -127,3 +127,11 @@ Simple macro wrapper around `UE5Coro::Latent::Until` to simplify the syntax.
 ```c++
 co_await MA_LATENT_UNTIL(bSomeVariable); // checks bSomeVariable every frame until it is true.
 ```
+
+# MAGameActions
+
+A lightweight alternative to the Gameplay Ability System (GAS). Nothing but a simple action system that takes similar advantage of gameplay tags, but
+without built-in multiplayer, executions, attribute sets, effects, etc. Designed for those who like the basic functions of abilities but don't want
+any of the extra complexity.
+
+Documentation forthcoming.
