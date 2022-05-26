@@ -154,7 +154,7 @@ public:
 	static UGameActionComponent* GetGameActionComponentFromActor(const AActor* Actor, bool bLookForComponent = false);
 
 protected:
-	FORCEINLINE const TMap<uint32, TObjectPtr<UGameAction>> GetActiveActions() const { return ActiveActions; }
+	FORCEINLINE const TMap<uint32, TObjectPtr<UGameAction>>& GetActiveActions() const { return ActiveActions; }
 
 private:
 	UPROPERTY()
