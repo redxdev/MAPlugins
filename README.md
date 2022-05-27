@@ -134,4 +134,40 @@ A lightweight alternative to the Gameplay Ability System (GAS). Nothing but a si
 without built-in multiplayer, executions, attribute sets, effects, etc. Designed for those who like the basic functions of abilities but don't want
 any of the extra complexity.
 
-Documentation forthcoming. Requires both MACommon and [UE5Coro](https://github.com/landelare/ue5coro) to be installed.
+Requires both MACommon and [UE5Coro](https://github.com/landelare/ue5coro) to be installed.
+
+## Game Action Component
+
+This component manages actions for an actor. Actors using this component should implement `IGameActionInterface`.
+
+## Game Action
+
+The base class for an action. Actions can be implemented in C++ or Blueprint. Every action has three sets of tags that define
+whether the action is allowed to run and what other actions can run at the same time
+
+### Owned Tags
+
+Tags that apply to the action itself.
+
+### Block Tags
+
+If an action is running it will block any other actions that have these tags. Additionally, an action blocking tags will be prevented from executing
+if there are already active actions with blocked tags.
+
+### Cancel Tags
+
+When an action is executed it will cancel any other actions that have these tags.
+
+## Cooldowns
+
+A cooldown is a gameplay tag applied to a game action component that expires after a set amount of time. During that time the component
+counts as having that tag applied, and as such can block actions from executing. Note that applying a cooldown tag doesn't do anything to
+already-running actions, even if they are blocked by that tag.
+
+`CancelTags` on an action cannot affect cooldown tags.
+
+## Game Action Handles
+
+When executing an action, a handle to that action is returned instead of an instance of the action itself. The action can be retrieved via the handle.
+
+This is a remnant of an older design for actions, but it is still recommended that you hold onto handles rather than actions themselves.
