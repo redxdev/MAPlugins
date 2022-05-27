@@ -171,3 +171,33 @@ already-running actions, even if they are blocked by that tag.
 When executing an action, a handle to that action is returned instead of an instance of the action itself. The action can be retrieved via the handle.
 
 This is a remnant of an older design for actions, but it is still recommended that you hold onto handles rather than actions themselves.
+
+# MADamage
+
+This is a simple damage system meant to replace the built-in one (which is supposed to be deprecated/removed at some point anyway).
+
+The design is largely similar, but with a focus on using gameplay tags and allowing the actor being damaged to respond to the thing damaging it.
+
+## IMADamageableInterface
+
+Implement this interface in either C++ or blueprint on any actor that can potentially be damaged. When applying damage, `OnIncomingDamage` is called
+and a reference to the damage event is passed in - this event both contains information about the incoming damage and also allows the actor to let the
+damager know how the damage was responded to via gameplay tags. The event can return false to indicate the actor wasn't damageable.
+
+## FMADamageResponse
+
+This structure is used to pass around data about a damage event - the target, the damage causer and instigator, etc.
+
+`IncomingTags` can be used to indicate the type of damage or any special effects caused by the damage. `ResponseTags` can be used by the target to indicate
+how the damage was responded to. `Damage` indicates the amount of damage to apply, but the target is free to change this value if it will not take the full amount.
+
+## UMADamageTypeBase and UMATaggedDamageType
+
+Used for damage "archetypes" - instead of having to apply tags and other values to a damage event manually every time you apply damage, you can simply pass in a subclass
+of `UMADamageTypeBase`. Unlike the built-in damage system, this class is not passed around with the event and instead gets an early opportunity to modify the event itself.
+
+`UMATaggedDamageType` is a simple subclass that applies a list of tags to the damage event's incoming tags.
+
+## UMADamageLibrary
+
+This is the primary point of interaction for applying damage - use either `ApplyDamage` or `ApplyDamageFromHit` to apply damage to an actor.
