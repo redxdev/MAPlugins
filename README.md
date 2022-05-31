@@ -201,3 +201,25 @@ of `UMADamageTypeBase`. Unlike the built-in damage system, this class is not pas
 ## UMADamageLibrary
 
 This is the primary point of interaction for applying damage - use either `ApplyDamage` or `ApplyDamageFromHit` to apply damage to an actor.
+
+# MAGameplay
+
+Generic gameplay utilities.
+
+## UAIStateComponent and UPawnAIStateComponent
+
+Very simple "state machine" components that use behavior trees for each state. While behavior trees themselves can be used for this sort of task, this makes it easier to create smaller
+reusable behaviors.
+
+For example, if you have different idle and combat behaviors for an enemy and you want to be able to control them more easily both within the enemy and from the level's own logic, you
+could have separate behavior trees for each and assign them to separate idle and combat states.
+
+This is *very* simple and made to fit a specific workflow, though the `FAIState` structure may be updated in the future to support more options or even constructs beyond behavior trees.
+
+### Controller vs Pawn
+
+`UAIStateComponent` is the "brain" of the system and must be placed on an `AAIController`. It manages the state of the AI itself. It also lets you configure states and behaviors.
+
+`UPawnAIStateComponent` is a container for additional or overriding states on a specific pawn. States here will replace states with the same tag in the AI controller's component. This
+can be useful if, for example, you have a generic AI controller for enemies with some common states but you have one specific enemy type that needs to act slightly differently. Or if
+you want a specific enemy placed in a level to have different behaviors than the normal version.

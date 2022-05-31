@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "0.1.0",
+	"FriendlyName": "MAGameplay",
+	"Description": "Common gameplay classes.",
+	"Category": "Other",
+	"CreatedBy": "MissiveArts LLC",
+	"CreatedByURL": "https://xbloom.io",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": false,
+	"IsBetaVersion": true,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "MAGameplay",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
