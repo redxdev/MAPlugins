@@ -17,6 +17,7 @@ public class MAGameplay : ModuleRules
 				"Engine",
 				"GameplayTags",
 				"AIModule",
+				"GameplayTasks",
 			});
 	}
 }

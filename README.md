@@ -223,3 +223,9 @@ This is *very* simple and made to fit a specific workflow, though the `FAIState`
 `UPawnAIStateComponent` is a container for additional or overriding states on a specific pawn. States here will replace states with the same tag in the AI controller's component. This
 can be useful if, for example, you have a generic AI controller for enemies with some common states but you have one specific enemy type that needs to act slightly differently. Or if
 you want a specific enemy placed in a level to have different behaviors than the normal version.
+
+## Behavior Tree Nodes
+
+### Composite: Random
+
+Acts like a selector but randomly selects children to execute instead of going from left to right.
