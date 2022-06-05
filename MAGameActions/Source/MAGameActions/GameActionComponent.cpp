@@ -187,7 +187,7 @@ FAsyncCoroutine UGameActionComponent::ExecuteActionLatent(FGameplayTag Name, FLa
 		}
 	}
 
-	co_await UE5Coro::Latent::ChainEx(&ThisClass::InternalExecuteActionLatent, this, Handle, Action, ActionResult, std::placeholders::_2);
+	co_await InternalExecuteActionLatent(Handle, Action, ActionResult);
 }
 
 FAsyncCoroutine UGameActionComponent::ExecuteActionByClassLatent(TSubclassOf<UGameAction> ActionClass, FLatentActionInfo LatentInfo, EGameActionExecutionResult& ActionResult)
@@ -221,7 +221,7 @@ FAsyncCoroutine UGameActionComponent::ExecuteActionByClassLatent(TSubclassOf<UGa
 		}
 	}
 
-	co_await UE5Coro::Latent::ChainEx(&ThisClass::InternalExecuteActionLatent, this, Handle, Action, ActionResult, std::placeholders::_2);
+	co_await InternalExecuteActionLatent(Handle, Action, ActionResult);
 }
 
 bool UGameActionComponent::CancelAction(const FGameActionHandle& Handle)
@@ -458,8 +458,7 @@ UGameActionComponent* UGameActionComponent::GetGameActionComponentFromActor(cons
 FAsyncCoroutine UGameActionComponent::InternalExecuteActionLatent(
 	const FGameActionHandle& Handle,
 	UGameAction* Action,
-	EGameActionExecutionResult& Result,
-	FLatentActionInfo LatentInfo)
+	EGameActionExecutionResult& Result)
 {
 	UGameActionComponent* ThisPtr = this;
 	MA_WEAK_REF(Action, ThisPtr);

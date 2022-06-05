@@ -164,7 +164,7 @@ private:
 
 	uint32 NextActionId;
 	
-	FAsyncCoroutine InternalExecuteActionLatent(const FGameActionHandle& Handle, UGameAction* Action, EGameActionExecutionResult& Result, FLatentActionInfo LatentInfo);
+	FAsyncCoroutine InternalExecuteActionLatent(const FGameActionHandle& Handle, UGameAction* Action, EGameActionExecutionResult& Result);
 
 	UGameAction* BeginExecuteAction(FGameplayTag Name, FGameActionHandle& OutHandle);
 	UGameAction* BeginExecuteAction(TSubclassOf<UGameAction> ActionClass, FGameActionHandle& OutHandle);
