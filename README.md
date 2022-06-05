@@ -228,4 +228,8 @@ you want a specific enemy placed in a level to have different behaviors than the
 
 ### Composite: Random
 
-Acts like a selector but randomly selects children to execute instead of going from left to right.
+Acts like a selector but randomly selects children to execute instead of going from left to right. By default all children have a weight of 1.0, but you can adjust the weighting by
+adding a "Random Weight" decorator to your child nodes.
+
+If `bExcludeFailedChildren` is true then any child that fails will be excluded from subsequent random selections until the random composite is exited entirely. If `bExcludeFailedChildren` is
+false then a child can be selected again even immediately after it fails.
