@@ -233,3 +233,7 @@ adding a "Random Weight" decorator to your child nodes.
 
 If `bExcludeFailedChildren` is true then any child that fails will be excluded from subsequent random selections until the random composite is exited entirely. If `bExcludeFailedChildren` is
 false then a child can be selected again even immediately after it fails.
+
+# MASmartObjects
+
+Extensions to the UE5 SmartObjects plugin.

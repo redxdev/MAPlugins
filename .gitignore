@@ -41,14 +41,5 @@
 *.VC.db
 *.VC.opendb
 
-MACommon/Binaries/*
-MACommon/Intermediate/*
-
-MAGameActions/Binaries/*
-MAGameActions/Intermediate/*
-
-MADamage/Binaries/*
-MADamage/Intermediate/*
-
-MAGameplay/Binaries/*
-MAGameplay/Intermediate/*
+*/Binaries/*
+*/Intermediate/*
