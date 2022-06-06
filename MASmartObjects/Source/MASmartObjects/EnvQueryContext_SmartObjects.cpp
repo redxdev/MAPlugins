@@ -12,11 +12,6 @@ UEnvQueryContext_SmartObjects::UEnvQueryContext_SmartObjects()
 	SearchCenter = UEnvQueryContext_Querier::StaticClass();
 }
 
-static int32 GetTypeHash(const FSmartObjectRequestResult& Result)
-{
-	return HashCombine(GetTypeHash(Result.SmartObjectHandle), GetTypeHash(Result.SlotHandle));
-}
-
 void UEnvQueryContext_SmartObjects::ProvideContext(FEnvQueryInstance& QueryInstance, FEnvQueryContextData& ContextData) const
 {
 	if (!QueryInstance.World)
@@ -45,18 +40,13 @@ void UEnvQueryContext_SmartObjects::ProvideContext(FEnvQueryInstance& QueryInsta
 		return;
 	}
 
-	TSet<FSmartObjectRequestResult> Results;
+	TArray<FSmartObjectRequestResult> Results;
 	for (const FVector& Location : ContextLocations)
 	{
 		// Not technically a radius, but... close enough.
 		Request.QueryBox = FBox(Location - SearchRadius, Location + SearchRadius);
-
-		TArray<FSmartObjectRequestResult> FoundObjects;
-		if (SO->FindSmartObjects(Request, FoundObjects))
-		{
-			Results.Append(FoundObjects);
-		}
+		SO->FindSmartObjects(Request, Results);
 	}
 
-	UEnvQueryItemType_SmartObject::SetContextHelper(ContextData, SO, Results.Array());
+	UEnvQueryItemType_SmartObject::SetContextHelper(ContextData, SO, Results);
 }
