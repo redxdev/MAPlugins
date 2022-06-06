@@ -16,7 +16,10 @@ public class MASmartObjects : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"AIModule",
-				"SmartObjectsModule"
+				"SmartObjectsModule",
+				"GameplayBehaviorsModule",
+				"GameplayTasks",
+				"GameplayTags",
 			});
 	}
 }

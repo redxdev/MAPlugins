@@ -20,13 +20,18 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"SmartObjectsModule"
+				"SmartObjectsModule",
+				"GameplayBehaviorsModule"
 			]
 		}
 	],
 	"Plugins": [
 		{
 			"Name": "SmartObjects",
+			"Enabled": true
+		},
+		{
+			"Name": "GameplayBehaviors",
 			"Enabled": true
 		}
 	]

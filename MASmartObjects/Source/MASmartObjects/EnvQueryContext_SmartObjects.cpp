@@ -3,6 +3,7 @@
 
 #include "EnvQueryContext_SmartObjects.h"
 #include "EnvQueryItemType_SmartObject.h"
+#include "GameplayTagAssetInterface.h"
 #include "EnvironmentQuery/EnvQueryTypes.h"
 #include "EnvironmentQuery/Contexts/EnvQueryContext_Querier.h"
 
@@ -28,9 +29,15 @@ void UEnvQueryContext_SmartObjects::ProvideContext(FEnvQueryInstance& QueryInsta
 		return;
 	}
 
+	FGameplayTagContainer UserTags;
+	if (IGameplayTagAssetInterface* TagInterface = Cast<IGameplayTagAssetInterface>(QueryInstance.Owner.Get()))
+	{
+		TagInterface->GetOwnedGameplayTags(UserTags);
+	}
+
 	USmartObjectSubsystem* SO = QueryInstance.World->GetSubsystem<USmartObjectSubsystem>();
 	FSmartObjectRequest Request;
-	Request.Filter = Filter;
+	Request.Filter = FSmartObjectRequestFilter(UserTags, ActivityRequirements);
 
 	TArray<FVector> ContextLocations;
 	if (!QueryInstance.PrepareContext(SearchCenter, ContextLocations))

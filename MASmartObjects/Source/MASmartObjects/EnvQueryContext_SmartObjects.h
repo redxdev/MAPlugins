@@ -16,7 +16,7 @@ public:
 	UEnvQueryContext_SmartObjects();
 
 	UPROPERTY(EditAnywhere, Category = Context)
-	FSmartObjectRequestFilter Filter;
+	FGameplayTagQuery ActivityRequirements;
 
 	UPROPERTY(EditAnywhere, Category = Context)
 	float SearchRadius = 1000.f;
