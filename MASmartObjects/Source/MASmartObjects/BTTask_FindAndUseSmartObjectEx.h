@@ -41,7 +41,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = SmartObjects)
 	float Radius;
 
-	UPROPERTY(EditAnywhere, Category = "Search")
+	UPROPERTY(EditAnywhere, Category = SmartObjects)
 	ESmartObjectSortMode SortMode;
 
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
