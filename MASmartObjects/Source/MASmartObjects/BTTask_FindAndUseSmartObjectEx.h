@@ -13,7 +13,21 @@ enum class ESmartObjectSortMode
 	First,
 	Random,
 	Closest,
-	Furthest
+	Furthest,
+
+	// Selects randomly from the closest 25% of smart objects.
+	// The 25% "window" moves if a claim cannot be made to a smart object slot.
+	Closest25Percent UMETA(DisplayName = "Closest 25%"),
+
+	// Selects randomly from the furthest 25% of smart objects.
+	// The 25% "window" moves if a claim cannot be made to a smart object slot.
+	Furthest25Percent UMETA(DisplayName = "Furthest 25%"),
+
+	// Selects randomly with a higher weight towards closer smart objects.
+	ClosestWeighted,
+
+	// Selects randomly with a higher weight towards further smart objects.
+	FurthestWeighted,
 };
 
 struct FBTUseSOExTaskMemory

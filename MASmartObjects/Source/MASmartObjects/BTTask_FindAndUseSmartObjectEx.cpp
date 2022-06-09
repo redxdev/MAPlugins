@@ -132,38 +132,100 @@ FSmartObjectClaimHandle UBTTask_FindAndUseSmartObjectEx::SortAndClaimSlot(USmart
 
 	case ESmartObjectSortMode::Closest:
 	case ESmartObjectSortMode::Furthest:
-		InResults.Sort([&](const auto& A, const auto& B)
+	case ESmartObjectSortMode::Closest25Percent:
+	case ESmartObjectSortMode::Furthest25Percent:
+	case ESmartObjectSortMode::ClosestWeighted:
+	case ESmartObjectSortMode::FurthestWeighted:
 		{
-			TOptional<FVector> Loc = Subsystem->GetSlotLocation(A);
-			if (!Loc.IsSet())
+			InResults.Sort([&](const auto& A, const auto& B)
 			{
-				return false;
-			}
-
-			float ADist = FVector::DistSquared(Loc.GetValue(), SearchLocation);
-
-			Loc = Subsystem->GetSlotLocation(B);
-			if (!Loc.IsSet())
-			{
-				return true;
-			}
-
-			float BDist = FVector::DistSquared(Loc.GetValue(), SearchLocation);
-			return SortMode == ESmartObjectSortMode::Closest ? (ADist < BDist) : (BDist < ADist);
-		});
-
-		for (const FSmartObjectRequestResult& Result : InResults)
-		{
-			if (Result.IsValid())
-			{
-				Claim = Subsystem->Claim(Result);
-				if (Claim.IsValid())
+				TOptional<FVector> Loc = Subsystem->GetSlotLocation(A);
+				if (!Loc.IsSet())
 				{
-					break;
+					return false;
+				}
+
+				float ADist = FVector::DistSquared(Loc.GetValue(), SearchLocation);
+
+				Loc = Subsystem->GetSlotLocation(B);
+				if (!Loc.IsSet())
+				{
+					return true;
+				}
+
+				float BDist = FVector::DistSquared(Loc.GetValue(), SearchLocation);
+				return SortMode == ESmartObjectSortMode::Closest ? (ADist < BDist) : (BDist < ADist);
+			});
+
+			if (SortMode == ESmartObjectSortMode::Closest || SortMode == ESmartObjectSortMode::Furthest)
+			{
+				for (const FSmartObjectRequestResult& Result : InResults)
+				{
+					if (Result.IsValid())
+					{
+						Claim = Subsystem->Claim(Result);
+						if (Claim.IsValid())
+						{
+							break;
+						}
+					}
 				}
 			}
+			else if (SortMode == ESmartObjectSortMode::Closest25Percent || SortMode == ESmartObjectSortMode::Furthest25Percent)
+			{
+				while (!Claim.IsValid() && InResults.Num() > 0)
+				{
+					int32 EffectiveNum = InResults.Num() / 4;
+					int32 Index = EffectiveNum > 1 ? FMath::RandHelper(EffectiveNum) : 0;
+					const FSmartObjectRequestResult& Result = InResults[Index];
+					if (Result.IsValid())
+					{
+						Claim = Subsystem->Claim(Result);
+						if (Claim.IsValid())
+						{
+							break;
+						}
+					}
+
+					InResults.RemoveAt(Index, 1, false);
+				}
+			}
+			else
+			{
+				while (!Claim.IsValid() && InResults.Num() > 0)
+				{
+					int32 MaxValue = (InResults.Num() * (InResults.Num() + 1)) / 2;
+					int32 Value = MaxValue > 1 ? FMath::RandHelper(MaxValue + 1) : 0;
+
+					// There's probably a faster way to do this than iterating.
+					// Ideally this would be based on distance rather than index anyway, but it probably doesn't matter _that_ much.
+					int32 Index = 0;
+					while (Index < InResults.Num())
+					{
+						Value -= InResults.Num() - Index;
+						if (Value <= 0)
+						{
+							break;
+						}
+
+						++Index;
+					}
+
+					const FSmartObjectRequestResult& Result = InResults[Index];
+					if (Result.IsValid())
+					{
+						Claim = Subsystem->Claim(Result);
+						if (Claim.IsValid())
+						{
+							break;
+						}
+					}
+
+					InResults.RemoveAt(Index, 1, false);
+				}
+			}
+			break;
 		}
-		break;
 	}
 
 	return Claim;
