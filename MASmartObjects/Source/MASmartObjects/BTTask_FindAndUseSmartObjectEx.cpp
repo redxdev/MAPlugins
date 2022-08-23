@@ -197,7 +197,7 @@ FSmartObjectClaimHandle UBTTask_FindAndUseSmartObjectEx::SortAndClaimSlot(USmart
 					int32 MaxValue = (InResults.Num() * (InResults.Num() + 1)) / 2;
 					int32 Value = MaxValue > 1 ? FMath::RandHelper(MaxValue + 1) : 0;
 
-					// There's probably a faster way to do this than iterating.
+					// There's probably a faster way to do this than iterating
 					// Ideally this would be based on distance rather than index anyway, but it probably doesn't matter _that_ much.
 					int32 Index = 0;
 					while (Index < InResults.Num())

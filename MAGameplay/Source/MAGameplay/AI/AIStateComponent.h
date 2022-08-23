@@ -13,7 +13,7 @@ struct MAGAMEPLAY_API FAIState
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UBehaviorTree* BehaviorTree;
+	TObjectPtr<UBehaviorTree> BehaviorTree = nullptr;
 };
 
 // Overrides and extends states in UAIStateComponent.

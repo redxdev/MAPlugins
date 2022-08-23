@@ -16,13 +16,13 @@ struct MADAMAGE_API FMADamageResponse
 	float Damage = 0.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<AActor> Target;
+	TObjectPtr<AActor> Target = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<AActor> DamageCauser;
+	TObjectPtr<AActor> DamageCauser = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<AController> Instigator;
+	TObjectPtr<AController> Instigator = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (Categories = "Damage"))
 	FGameplayTagContainer IncomingTags;

@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameplayBehavior.h"
 #include "GameplayBehaviorConfig.h"
-#include "UObject/Object.h"
 #include "GameplayBehavior_Wait.generated.h"
 
 USTRUCT()
@@ -14,7 +13,7 @@ struct FWaitBehaviorData
 	GENERATED_BODY()
 
 	UPROPERTY()
-	AActor* Avatar;
+	TObjectPtr<AActor> Avatar = nullptr;
 
 	FTimerHandle TimerHandle;
 
