@@ -44,6 +44,13 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Action")
     FGameplayTagContainer CancelTags;
 
+    // Blocks execution of this action (but not others) if any tags are missing.
+    // This is not predictive. For example, tags applied as the result of CancelTags stopping another action will not be taken into
+    // consideration.
+    // If you need a more complex query, consider overriding CanExecuteAction.
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Action")
+    FGameplayTagContainer RequireTags;
+
     // Cooldown tags to apply when this action completes.
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Action")
     TMap<FGameplayTag, float> Cooldowns;

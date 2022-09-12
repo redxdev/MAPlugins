@@ -559,6 +559,8 @@ UGameAction* UGameActionComponent::BeginExecuteAction(TSubclassOf<UGameAction> A
 		return nullptr;
 	}
 
+	FGameplayTagContainer RequiredTags = Action->RequireTags;
+
 	// Check cooldown tags
 	for (const auto& Cooldown : ActiveCooldowns)
 	{
@@ -567,6 +569,8 @@ UGameAction* UGameActionComponent::BeginExecuteAction(TSubclassOf<UGameAction> A
 			UE_VLOG(GetOwner(), LogGameActions, Verbose, TEXT("Action '%s' (h%u) was blocked due to cooldown tag '%s'"), *Action->GetName(), Handle.Id, *Cooldown.Key.ToString());
 			return nullptr;
 		}
+
+		RequiredTags.RemoveTag(Cooldown.Key);
 	}
 	
 	// Check tags
@@ -585,6 +589,14 @@ UGameAction* UGameActionComponent::BeginExecuteAction(TSubclassOf<UGameAction> A
 			UE_VLOG(GetOwner(), LogGameActions, Verbose, TEXT("Action '%s' (h%u) was blocked due to tags on action '%s' (h%u)"), *Action->GetName(), Handle.Id, *OtherAction->GetName(), Elem.Key);
 			return nullptr;
 		}
+
+		RequiredTags.RemoveTags(OtherAction->OwnedTags);
+	}
+
+	if (RequiredTags.Num() != 0)
+	{
+		UE_VLOG(GetOwner(), LogGameActions, Verbose, TEXT("Action '%s' (h%u) was blocked due to not satisfying tag requirements"), *Action->GetName(), Handle.Id);
+		return nullptr;
 	}
 
 	for (auto& ActionToCancel : ActionsToCancel)
