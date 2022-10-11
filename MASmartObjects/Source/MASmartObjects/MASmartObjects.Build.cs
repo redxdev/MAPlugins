@@ -18,6 +18,7 @@ public class MASmartObjects : ModuleRules
 				"AIModule",
 				"SmartObjectsModule",
 				"GameplayBehaviorsModule",
+				"GameplayBehaviorSmartObjectsModule",
 				"GameplayTasks",
 				"GameplayTags",
 			});

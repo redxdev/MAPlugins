@@ -32,7 +32,8 @@ void UEnvQueryContext_SmartObjects::ProvideContext(FEnvQueryInstance& QueryInsta
 
 	USmartObjectSubsystem* SO = QueryInstance.World->GetSubsystem<USmartObjectSubsystem>();
 	FSmartObjectRequest Request;
-	Request.Filter = FSmartObjectRequestFilter(UserTags, ActivityRequirements);
+	Request.Filter.UserTags = UserTags;
+	Request.Filter.ActivityRequirements = ActivityRequirements;
 
 	TArray<FVector> ContextLocations;
 	if (!QueryInstance.PrepareContext(SearchCenter, ContextLocations))

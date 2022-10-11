@@ -4,7 +4,8 @@
 #include "AIController.h"
 #include "BlackboardKeyType_SOClaimHandle.h"
 #include "GameplayTagAssetInterface.h"
-#include "AI/AITask_UseSmartObject.h"
+#include "GameplayBehaviorSmartObjectBehaviorDefinition.h"
+#include "AI/AITask_UseGameplayBehaviorSmartObject.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "VisualLogger/VisualLogger.h"
 
@@ -41,8 +42,10 @@ EBTNodeResult::Type UBTTask_FindAndUseSmartObjectEx::ExecuteTask(UBehaviorTreeCo
 	AActor& Avatar = *MyController->GetPawn();
 
 	// Create filter
-	FSmartObjectRequestFilter Filter(ActivityRequirements);
-	Filter.BehaviorDefinitionClass = USmartObjectGameplayBehaviorDefinition::StaticClass();
+	FSmartObjectRequestFilter Filter;
+	Filter.ActivityRequirements = ActivityRequirements;
+	Filter.BehaviorDefinitionClasses.Add(UGameplayBehaviorSmartObjectBehaviorDefinition::StaticClass());
+
 	const IGameplayTagAssetInterface* TagsSource = Cast<const IGameplayTagAssetInterface>(&Avatar);
 	if (TagsSource != nullptr)
 	{
@@ -58,7 +61,7 @@ EBTNodeResult::Type UBTTask_FindAndUseSmartObjectEx::ExecuteTask(UBehaviorTreeCo
 		FSmartObjectClaimHandle ClaimHandle = SortAndClaimSlot(Subsystem, Results, SearchLocation);
 		if (ClaimHandle.IsValid())
 		{
-			UAITask_UseSmartObject* UseSOTask = NewBTAITask<UAITask_UseSmartObject>(OwnerComp);
+			UAITask_UseGameplayBehaviorSmartObject* UseSOTask = NewBTAITask<UAITask_UseGameplayBehaviorSmartObject>(OwnerComp);
 			UseSOTask->SetClaimHandle(ClaimHandle);
 			UseSOTask->ReadyForActivation();
 

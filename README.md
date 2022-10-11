@@ -3,6 +3,8 @@
 This is a set of plugins that can be used in Unreal Engine 5. The plugins do not depend on each other unless otherwise
 specified - you can use them individually.
 
+Plugins are currently setup for use with Unreal 5.1, earlier versions may work with minor modifications.
+
 # MACommon
 
 This contains common C++ utilities that I have found useful and don't really fit into plugins of their own.

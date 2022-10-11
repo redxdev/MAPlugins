@@ -44,7 +44,8 @@ void UEnvQueryGenerator_SmartObjects::GenerateItems(FEnvQueryInstance& QueryInst
 	float Radius = SearchRadius.GetValue();
 
 	FSmartObjectRequest Request;
-	Request.Filter = FSmartObjectRequestFilter(UserTags, ActivityRequirements);
+	Request.Filter.UserTags = UserTags;
+	Request.Filter.ActivityRequirements = ActivityRequirements;
 
 	TArray<FSmartObjectRequestResult> Results;
 	for (const FVector& Location : ContextLocations)

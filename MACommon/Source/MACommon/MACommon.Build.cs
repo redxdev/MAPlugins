@@ -19,6 +19,12 @@ public class MACommon : ModuleRules
 				"Engine",
 			});
 
+		PrivateDependencyModuleNames.AddRange(
+			new string[]
+			{
+				"NavigationSystem",
+			});
+
 		// TODO: better way of telling whether UE5Coro is installed...
 		string pluginDir = Path.Combine(PluginDirectory, "..");
 		if (Directory.Exists(Path.Combine(pluginDir, "UE5Coro")))
