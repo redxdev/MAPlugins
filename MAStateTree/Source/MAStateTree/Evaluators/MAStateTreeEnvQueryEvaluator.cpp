@@ -7,7 +7,7 @@
 #include "EnvironmentQuery/EnvQuery.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "EnvironmentQuery/Items/EnvQueryItemType_ActorBase.h"
-#include "MAGameplay/MAStateTree.h"
+#include "MAStateTree/MAStateTree.h"
 #include "VisualLogger/VisualLogger.h"
 
 FMAStateTreeEnvQueryEvaluator::FMAStateTreeEnvQueryEvaluator()
