@@ -3,7 +3,7 @@
 This is a set of plugins that can be used in Unreal Engine 5. The plugins do not depend on each other unless otherwise
 specified - you can use them individually.
 
-Plugins are currently setup for use with Unreal 5.1, earlier versions may work with minor modifications.
+Most plugins are currently setup for use with Unreal 5.1, earlier versions may work with minor modifications.
 
 # MACommon
 
@@ -239,3 +239,7 @@ false then a child can be selected again even immediately after it fails.
 # MASmartObjects
 
 Extensions to the UE5 SmartObjects plugin.
+
+# MAStateTree
+
+Common tasks, evaluators, etc for the UE5 StateTree plugin. Requires UE5.1+.
