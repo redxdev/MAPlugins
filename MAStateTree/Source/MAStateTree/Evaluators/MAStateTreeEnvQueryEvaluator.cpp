@@ -15,16 +15,22 @@ FMAStateTreeEnvQueryEvaluator::FMAStateTreeEnvQueryEvaluator()
 	bClearResultsOnQueryFailure = true;
 }
 
+void FMAStateTreeEnvQueryEvaluator::TreeStart(FStateTreeExecutionContext& Context) const
+{
+	FInstanceDataType& InstanceData = Context.GetInstanceData<FInstanceDataType>(*this);
+	Reset(Context, InstanceData);
+}
+
 void FMAStateTreeEnvQueryEvaluator::TreeStop(FStateTreeExecutionContext& Context) const
 {
-	InstanceDataType& InstanceData = Context.GetInstanceData<InstanceDataType>(*this);
+	FInstanceDataType& InstanceData = Context.GetInstanceData<FInstanceDataType>(*this);
 	Reset(Context, InstanceData);
 }
 
 void FMAStateTreeEnvQueryEvaluator::Tick(FStateTreeExecutionContext& Context, const float DeltaTime) const
 {
 	UWorld* World = Context.GetWorld();
-	InstanceDataType& InstanceData = Context.GetInstanceData<InstanceDataType>(*this);
+	FInstanceDataType& InstanceData = Context.GetInstanceData<FInstanceDataType>(*this);
 
 	if (InstanceData.ResultData->bFinished)
 	{
@@ -32,17 +38,20 @@ void FMAStateTreeEnvQueryEvaluator::Tick(FStateTreeExecutionContext& Context, co
 		{
 			if (InstanceData.ResultActor != InstanceData.ResultData->ResultActor || (!InstanceData.ResultActor.IsValid() && InstanceData.ResultLocation != InstanceData.ResultData->ResultLocation))
 			{
+				UE_VLOG(Context.GetOwner(), LogMAStateTree, Verbose, TEXT("EnvQuery result has changed, emitting event %s"), *ResultUpdatedEventTag.GetTagName().ToString());
 				Context.SendEvent(ResultUpdatedEventTag);
 			}
 		}
 
-		InstanceData.RequestId = INDEX_NONE;
 		InstanceData.ResultActor = InstanceData.ResultData->ResultActor;
 		InstanceData.ResultLocation = InstanceData.ResultData->ResultLocation;
 		InstanceData.bResult = InstanceData.ResultData->bResult;
 		InstanceData.ResultData->bFinished = false;
 
 		InstanceData.NextUpdate = World->GetTimeSeconds() + (InstanceData.bResult ? TickInterval : RetryCooldown);
+
+		UE_VLOG(Context.GetOwner(), LogMAStateTree, VeryVerbose, TEXT("EnvQuery has finished request id %i (result state: %s)"), InstanceData.RequestId, InstanceData.bResult ? TEXT("true") : TEXT("false"));
+		InstanceData.RequestId = INDEX_NONE;
 	}
 
 	if (InstanceData.RequestId >= 0 || InstanceData.NextUpdate > World->GetTimeSeconds())
@@ -55,7 +64,7 @@ void FMAStateTreeEnvQueryEvaluator::Tick(FStateTreeExecutionContext& Context, co
 	RunQuery(Context, InstanceData);
 }
 
-void FMAStateTreeEnvQueryEvaluator::Reset(FStateTreeExecutionContext& Context, InstanceDataType& InstanceData) const
+void FMAStateTreeEnvQueryEvaluator::Reset(FStateTreeExecutionContext& Context, FInstanceDataType& InstanceData) const
 {
 	if (InstanceData.RequestId >= 0)
 	{
@@ -63,6 +72,11 @@ void FMAStateTreeEnvQueryEvaluator::Reset(FStateTreeExecutionContext& Context, I
 		{
 			QueryManager->AbortQuery(InstanceData.RequestId);
 		}
+	}
+
+	if (!InstanceData.ResultData.IsValid())
+	{
+		InstanceData.ResultData = MakeShared<FMAStateTreeEnvQueryEvaluatorResultData>();
 	}
 
 	InstanceData.ResultLocation = FAISystem::InvalidLocation;
@@ -74,7 +88,7 @@ void FMAStateTreeEnvQueryEvaluator::Reset(FStateTreeExecutionContext& Context, I
 	// Don't reset NextUpdate
 }
 
-void FMAStateTreeEnvQueryEvaluator::RunQuery(FStateTreeExecutionContext& Context, InstanceDataType& InstanceData) const
+void FMAStateTreeEnvQueryEvaluator::RunQuery(FStateTreeExecutionContext& Context, FInstanceDataType& InstanceData) const
 {
 	InstanceData.RequestId = INDEX_NONE;
 	InstanceData.ResultData->bFinished = false;

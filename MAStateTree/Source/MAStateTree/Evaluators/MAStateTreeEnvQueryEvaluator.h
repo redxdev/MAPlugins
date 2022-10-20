@@ -47,7 +47,7 @@ struct MASTATETREE_API FMAStateTreeEnvQueryEvaluatorInstanceData
 	UPROPERTY(EditAnywhere, Category = Output)
 	uint8 bResult : 1;
 
-	TSharedRef<FMAStateTreeEnvQueryEvaluatorResultData> ResultData = MakeShared<FMAStateTreeEnvQueryEvaluatorResultData>();
+	TSharedPtr<FMAStateTreeEnvQueryEvaluatorResultData> ResultData;
 
 	double NextUpdate = 0.0;
 };
@@ -57,7 +57,7 @@ struct MASTATETREE_API FMAStateTreeEnvQueryEvaluator : public FStateTreeEvaluato
 {
 	GENERATED_BODY()
 
-	using InstanceDataType = FMAStateTreeEnvQueryEvaluatorInstanceData;
+	using FInstanceDataType = FMAStateTreeEnvQueryEvaluatorInstanceData;
 
 	FMAStateTreeEnvQueryEvaluator();
 
@@ -79,12 +79,13 @@ struct MASTATETREE_API FMAStateTreeEnvQueryEvaluator : public FStateTreeEvaluato
 	UPROPERTY(EditAnywhere, Category = Parameter)
 	FGameplayTag ResultUpdatedEventTag;
 
-	virtual const UStruct* GetInstanceDataType() const override { return InstanceDataType::StaticStruct(); }
+	virtual const UStruct* GetInstanceDataType() const override { return FInstanceDataType::StaticStruct(); }
 
+	virtual void TreeStart(FStateTreeExecutionContext& Context) const override;
 	virtual void TreeStop(FStateTreeExecutionContext& Context) const override;
 	virtual void Tick(FStateTreeExecutionContext& Context, const float DeltaTime) const override;
 
 private:
-	void Reset(FStateTreeExecutionContext& Context, InstanceDataType& InstanceData) const;
-	void RunQuery(FStateTreeExecutionContext& Context, InstanceDataType& InstanceData) const;
+	void Reset(FStateTreeExecutionContext& Context, FInstanceDataType& InstanceData) const;
+	void RunQuery(FStateTreeExecutionContext& Context, FInstanceDataType& InstanceData) const;
 };

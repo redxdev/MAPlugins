@@ -46,7 +46,7 @@ FMAStateTreeMoveToTask::FMAStateTreeMoveToTask()
 
 EStateTreeRunStatus FMAStateTreeMoveToTask::EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) const
 {
-	FMAStateTreeMoveToTaskInstanceData& InstanceData = Context.GetInstanceData<FMAStateTreeMoveToTaskInstanceData>(*this);
+	FInstanceDataType& InstanceData = Context.GetInstanceData<FInstanceDataType>(*this);
 	InstanceData.PreviousGoalLocation = FAISystem::InvalidLocation;
 	InstanceData.MoveRequestId = FAIRequestID::InvalidRequest;
 
@@ -62,7 +62,7 @@ EStateTreeRunStatus FMAStateTreeMoveToTask::EnterState(FStateTreeExecutionContex
 
 EStateTreeRunStatus FMAStateTreeMoveToTask::Tick(FStateTreeExecutionContext& Context, const float DeltaTime) const
 {
-	FMAStateTreeMoveToTaskInstanceData& InstanceData = Context.GetInstanceData<FMAStateTreeMoveToTaskInstanceData>(*this);
+	FInstanceDataType& InstanceData = Context.GetInstanceData<FInstanceDataType>(*this);
 	UAITask_MoveTo* MoveTask = InstanceData.MoveTask.Get();
 	if (!MoveTask)
 	{
@@ -99,7 +99,7 @@ EStateTreeRunStatus FMAStateTreeMoveToTask::Tick(FStateTreeExecutionContext& Con
 
 void FMAStateTreeMoveToTask::ExitState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) const
 {
-	FMAStateTreeMoveToTaskInstanceData& InstanceData = Context.GetInstanceData<FMAStateTreeMoveToTaskInstanceData>(*this);
+	FInstanceDataType& InstanceData = Context.GetInstanceData<FInstanceDataType>(*this);
 	if (UAITask_MoveTo* MoveTask = InstanceData.MoveTask.Get())
 	{
 		MoveTask->ExternalCancel();

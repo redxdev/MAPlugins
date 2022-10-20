@@ -37,7 +37,7 @@ struct MASTATETREE_API FMAStateTreeMoveToTask : public FStateTreeTaskCommonBase
 {
 	GENERATED_BODY()
 
-	using InstanceDataType = FMAStateTreeMoveToTaskInstanceData;
+	using FInstanceDataType = FMAStateTreeMoveToTaskInstanceData;
 
 	FMAStateTreeMoveToTask();
 
@@ -84,7 +84,7 @@ struct MASTATETREE_API FMAStateTreeMoveToTask : public FStateTreeTaskCommonBase
 	uint8 bReachTestIncludesGoalRadius : 1;
 
 protected:
-	virtual const UStruct* GetInstanceDataType() const override { return InstanceDataType::StaticStruct(); }
+	virtual const UStruct* GetInstanceDataType() const override { return FInstanceDataType::StaticStruct(); }
 
 	virtual EStateTreeRunStatus EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) const override;
 	virtual EStateTreeRunStatus Tick(FStateTreeExecutionContext& Context, const float DeltaTime) const override;
