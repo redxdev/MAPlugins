@@ -18,20 +18,17 @@
 		{
 			"Name": "MAGameActions",
 			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"GameplayTags",
-				"UE5Coro",
-				"MACommon"
-			]
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "MAGameActionsStateTree",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
 		},
 		{
 			"Name": "MAGameActionsEditor",
 			"Type": "UncookedOnly",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"MAGameActions"
-			]
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
@@ -42,6 +39,11 @@
 		{
 			"Name": "MACommon",
 			"Enabled": true
+		},
+		{
+			"Name": "StateTree",
+			"Enabled": true,
+			"Optional": true
 		}
 	]
 }

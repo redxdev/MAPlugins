@@ -3,9 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "StateTreeReference.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "Components/ActorComponent.h"
 #include "AIStateComponent.generated.h"
+
+UENUM()
+enum class EAIStateMode : uint8
+{
+	BehaviorTree,
+	StateTree
+};
 
 USTRUCT(BlueprintType)
 struct MAGAMEPLAY_API FAIState
@@ -13,7 +21,16 @@ struct MAGAMEPLAY_API FAIState
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EAIStateMode Mode = EAIStateMode::BehaviorTree;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "Mode == EAIStateMode::BehaviorTree", EditConditionHides))
 	TObjectPtr<UBehaviorTree> BehaviorTree = nullptr;
+
+	// No blueprint support (yet)
+	UPROPERTY(EditAnywhere, meta=(Schema="/Script/GameplayStateTreeModule.StateTreeComponentSchema", EditCondition = "Mode == EAIStateMode::StateTree", EditConditionHides))
+	FStateTreeReference StateTree;
+
+	bool IsValid() const;
 };
 
 // Overrides and extends states in UAIStateComponent.
@@ -89,7 +106,7 @@ protected:
 
 private:
 	bool FindState(FGameplayTag StateTag, FAIState& OutState);
-	void InternalApplyState(FGameplayTag StateTag, const FAIState& State);
+	bool InternalApplyState(FGameplayTag StateTag, const FAIState& State);
 
 	UFUNCTION()
 	void OnPossessedPawnChanged(APawn* OldPawn, APawn* NewPawn);

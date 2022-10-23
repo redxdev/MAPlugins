@@ -79,6 +79,7 @@ struct MASTATETREE_API FMAStateTreeEnvQueryEvaluator : public FStateTreeEvaluato
 	UPROPERTY(EditAnywhere, Category = Parameter)
 	FGameplayTag ResultUpdatedEventTag;
 
+protected:
 	virtual const UStruct* GetInstanceDataType() const override { return FInstanceDataType::StaticStruct(); }
 
 	virtual void TreeStart(FStateTreeExecutionContext& Context) const override;

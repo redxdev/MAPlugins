@@ -53,7 +53,7 @@ EStateTreeRunStatus FMAStateTreeMoveToTask::EnterState(FStateTreeExecutionContex
 	AAIController* MyController = InstanceData.GetAIController();
 	if (!IsValid(MyController))
 	{
-		UE_VLOG(Context.GetOwner(), LogMAStateTree, Warning, TEXT("FMAStateTreeMoveToTask failed as the AIController is missing"));
+		UE_VLOG(Context.GetOwner(), LogMAStateTree, Warning, TEXT("%s failed as the AIController is missing"), *Name.ToString());
 		return EStateTreeRunStatus::Failed;
 	}
 
@@ -63,23 +63,37 @@ EStateTreeRunStatus FMAStateTreeMoveToTask::EnterState(FStateTreeExecutionContex
 EStateTreeRunStatus FMAStateTreeMoveToTask::Tick(FStateTreeExecutionContext& Context, const float DeltaTime) const
 {
 	FInstanceDataType& InstanceData = Context.GetInstanceData<FInstanceDataType>(*this);
-	UAITask_MoveTo* MoveTask = InstanceData.MoveTask.Get();
-	if (!MoveTask)
+	if (!InstanceData.MoveTask)
 	{
-		UE_VLOG(Context.GetOwner(), LogMAStateTree, Warning, TEXT("FMAStateTreeMoveToTask's ai task is invalid, failing task"));
+		UE_VLOG(Context.GetOwner(), LogMAStateTree, Warning, TEXT("%s's ai task is null, failing task"), *Name.ToString());
 		return EStateTreeRunStatus::Failed;
 	}
 
-	if (MoveTask->GetState() == EGameplayTaskState::Finished)
+	if (InstanceData.MoveTask->GetState() == EGameplayTaskState::Finished)
 	{
-		return MoveTask->WasMoveSuccessful() ? EStateTreeRunStatus::Succeeded : EStateTreeRunStatus::Failed;
+		if (InstanceData.MoveTask->WasMoveSuccessful())
+		{
+			UE_VLOG(Context.GetOwner(), LogMAStateTree, Verbose, TEXT("%s succeeded"), *Name.ToString());
+			return EStateTreeRunStatus::Succeeded;
+		}
+		else
+		{
+			UE_VLOG(Context.GetOwner(), LogMAStateTree, Verbose, TEXT("%s failed"), *Name.ToString());
+			return EStateTreeRunStatus::Failed;
+		}
+	}
+
+	if (!IsValid(InstanceData.MoveTask))
+	{
+		UE_VLOG(Context.GetOwner(), LogMAStateTree, Warning, TEXT("%s's ai task is invalid but hasn't been marked as finished, failing task"), *Name.ToString());
+		return EStateTreeRunStatus::Failed;
 	}
 
 	if (bObserveGoal)
 	{
 		if (bUseActorForGoal)
 		{
-			if (MoveTask->GetMoveRequestRef().GetGoalActor() != InstanceData.GoalActor)
+			if (InstanceData.MoveTask->GetMoveRequestRef().GetGoalActor() != InstanceData.GoalActor)
 			{
 				return PerformMoveTask(Context, InstanceData);
 			}
@@ -100,10 +114,12 @@ EStateTreeRunStatus FMAStateTreeMoveToTask::Tick(FStateTreeExecutionContext& Con
 void FMAStateTreeMoveToTask::ExitState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) const
 {
 	FInstanceDataType& InstanceData = Context.GetInstanceData<FInstanceDataType>(*this);
-	if (UAITask_MoveTo* MoveTask = InstanceData.MoveTask.Get())
+	if (IsValid(InstanceData.MoveTask))
 	{
-		MoveTask->ExternalCancel();
+		InstanceData.MoveTask->ExternalCancel();
 	}
+
+	InstanceData.MoveTask = nullptr;
 }
 
 EStateTreeRunStatus FMAStateTreeMoveToTask::PerformMoveTask(FStateTreeExecutionContext& Context, FMAStateTreeMoveToTaskInstanceData& InstanceData) const
@@ -128,7 +144,7 @@ EStateTreeRunStatus FMAStateTreeMoveToTask::PerformMoveTask(FStateTreeExecutionC
 	{
 		if (!IsValid(InstanceData.GoalActor))
 		{
-			UE_VLOG(Context.GetOwner(), LogMAStateTree, Warning, TEXT("FMAStateTreeMoveToTask failed as bUseActorForGoal was true but no goal actor was specified"));
+			UE_VLOG(Context.GetOwner(), LogMAStateTree, Warning, TEXT("%s failed as bUseActorForGoal was true but no goal actor was specified"), *Name.ToString());
 			return EStateTreeRunStatus::Failed;
 		}
 

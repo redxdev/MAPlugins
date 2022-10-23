@@ -18,6 +18,9 @@ public class MAGameplay : ModuleRules
 				"GameplayTags",
 				"AIModule",
 				"GameplayTasks",
+				"StateTreeModule",
+				"GameplayStateTreeModule",
+				"StructUtils",
 			});
 	}
 }

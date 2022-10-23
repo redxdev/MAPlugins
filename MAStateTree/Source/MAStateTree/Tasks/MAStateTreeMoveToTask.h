@@ -26,8 +26,8 @@ struct MASTATETREE_API FMAStateTreeMoveToTaskInstanceData
 	FVector PreviousGoalLocation = FAISystem::InvalidLocation;
 	FAIRequestID MoveRequestId = FAIRequestID::InvalidRequest;
 
-	// TODO: need to check if the GC can collect this before we can retrieve the result
-	TWeakObjectPtr<class UAITask_MoveTo> MoveTask = nullptr;
+	UPROPERTY()
+	TObjectPtr<class UAITask_MoveTo> MoveTask = nullptr;
 
 	AAIController* GetAIController() const;
 };

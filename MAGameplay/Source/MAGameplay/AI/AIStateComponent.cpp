@@ -3,7 +3,16 @@
 #include "AIStateComponent.h"
 #include "MAGameplay/MAGameplay.h"
 #include "AIController.h"
+#include "MAStateTreeComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "Components/StateTreeComponent.h"
 #include "VisualLogger/VisualLogger.h"
+
+bool FAIState::IsValid() const
+{
+	return (Mode == EAIStateMode::BehaviorTree && ::IsValid(BehaviorTree))
+		|| (Mode == EAIStateMode::StateTree && StateTree.IsValid());
+}
 
 void UPawnAIStateComponent::PostInitProperties()
 {
@@ -74,8 +83,7 @@ bool UAIStateComponent::ApplyState(FGameplayTag StateTag)
 		bResult = false;
 	}
 
-	InternalApplyState(StateTag, State);
-	return bResult;
+	return bResult && InternalApplyState(StateTag, State);
 }
 
 bool UAIStateComponent::CancelState()
@@ -147,25 +155,100 @@ bool UAIStateComponent::FindState(FGameplayTag StateTag, FAIState& OutState)
 	return false;
 }
 
-void UAIStateComponent::InternalApplyState(FGameplayTag StateTag, const FAIState& State)
+bool UAIStateComponent::InternalApplyState(FGameplayTag StateTag, const FAIState& State)
 {
 	UE_VLOG(GetOwner(), LogMAGameplay, Verbose, TEXT("Moving to AI state %s"), *StateTag.ToString());
 	CurrentState = StateTag;
 
 	if (AAIController* Controller = GetOwner<AAIController>())
 	{
-		if (!CurrentState.IsValid() || !IsValid(State.BehaviorTree))
+		if (!CurrentState.IsValid() || !State.IsValid())
 		{
-			if (UBehaviorTreeComponent* BTComp = Cast<UBehaviorTreeComponent>(Controller->GetBrainComponent()))
+			if (UBrainComponent* Brain = Controller->GetBrainComponent())
 			{
-				BTComp->StopTree();
+				Brain->StopLogic(TEXT("Invalid State"));
 			}
+
+			return true;
 		}
 		else
 		{
-			Controller->RunBehaviorTree(State.BehaviorTree);
+			switch (State.Mode)
+			{
+			default:
+				checkNoEntry();
+				return false;
+
+			case EAIStateMode::BehaviorTree:
+				{
+					UBehaviorTreeComponent* BTComp = Cast<UBehaviorTreeComponent>(Controller->GetBrainComponent());
+					if (!BTComp)
+					{
+						if (Controller->GetBrainComponent())
+						{
+							UE_VLOG(GetOwner(), LogMAGameplay, Verbose, TEXT("AI State: destroying brain (not a BT component)"));
+							Controller->GetBrainComponent()->Cleanup();
+							Controller->GetBrainComponent()->DestroyComponent();
+						}
+
+						UE_VLOG(GetOwner(), LogMAGameplay, Verbose, TEXT("AI state: creating new BT component"));
+						BTComp = NewObject<UBehaviorTreeComponent>(Controller, TEXT("BTComponent"));
+						BTComp->RegisterComponent();
+
+						Controller->BrainComponent = BTComp;
+					}
+
+					bool bSuccess = true;
+					UBlackboardComponent* BlackboardComp = Controller->GetBlackboardComponent();
+					if (State.BehaviorTree->BlackboardAsset && (!BlackboardComp || BlackboardComp->IsCompatibleWith(State.BehaviorTree->BlackboardAsset)))
+					{
+						bSuccess = Controller->UseBlackboard(State.BehaviorTree->BlackboardAsset, BlackboardComp);
+					}
+
+					if (bSuccess)
+					{
+						BTComp->StartTree(*State.BehaviorTree);
+					}
+					else
+					{
+						UE_VLOG(GetOwner(), LogMAGameplay, Error, TEXT("AI State: failed to setup behavior tree"));
+					}
+
+					return bSuccess;
+				}
+
+			case EAIStateMode::StateTree:
+				{
+					UMAStateTreeComponent* STComp = Cast<UMAStateTreeComponent>(Controller->GetBrainComponent());
+					if (!STComp)
+					{
+						if (Controller->GetBrainComponent())
+						{
+							UE_VLOG(GetOwner(), LogMAGameplay, Verbose, TEXT("AI State: destroying brain (not a ST component)"));
+							Controller->GetBrainComponent()->Cleanup();
+							Controller->GetBrainComponent()->DestroyComponent();
+						}
+
+						UE_VLOG(GetOwner(), LogMAGameplay, Verbose, TEXT("AI state: creating new ST component"));
+						STComp = NewObject<UMAStateTreeComponent>(Controller, TEXT("STComponent"));
+						STComp->SetStateTreeRef(State.StateTree);
+						STComp->RegisterComponent();
+
+						Controller->BrainComponent = STComp;
+					}
+					else
+					{
+						STComp->SetStateTreeRef(State.StateTree);
+					}
+
+					STComp->StartLogic();
+					return true;
+				}
+			}
 		}
 	}
+
+	return false;
 }
 
 void UAIStateComponent::OnPossessedPawnChanged(APawn* OldPawn, APawn* NewPawn)

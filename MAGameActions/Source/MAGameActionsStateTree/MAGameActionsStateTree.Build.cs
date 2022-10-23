@@ -3,11 +3,12 @@
 using System.IO;
 using UnrealBuildTool;
 
-public class MAStateTree : ModuleRules
+public class MAGameActionsStateTree : ModuleRules
 {
-	public MAStateTree(ReadOnlyTargetRules Target) : base(Target)
+	public MAGameActionsStateTree(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+		CppStandard = CppStandardVersion.Cpp20;
 		
 		PublicDependencyModuleNames.AddRange(
 			new string[]
@@ -15,24 +16,18 @@ public class MAStateTree : ModuleRules
 				"Core",
 				"CoreUObject",
 				"Engine",
-				"AIModule",
-				"NavigationSystem",
-				"StateTreeModule",
-				"GameplayStateTreeModule",
-				"GameplayTasks",
 				"GameplayTags",
-				"StructUtils",
+				"AIModule",
+				"GameplayTasks",
+				"UE5Coro",
+				"MAGameActions",
+				"StateTreeModule",
 			});
 
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"MAGameplay",
+				"MACommon",
 			});
-
-		if (Target.bBuildEditor)
-		{
-			PrivateDependencyModuleNames.Add("StateTreeEditorModule");
-		}
 	}
 }

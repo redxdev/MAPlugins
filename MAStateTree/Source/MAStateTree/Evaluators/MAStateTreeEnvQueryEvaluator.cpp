@@ -38,7 +38,7 @@ void FMAStateTreeEnvQueryEvaluator::Tick(FStateTreeExecutionContext& Context, co
 		{
 			if (InstanceData.ResultActor != InstanceData.ResultData->ResultActor || (!InstanceData.ResultActor.IsValid() && InstanceData.ResultLocation != InstanceData.ResultData->ResultLocation))
 			{
-				UE_VLOG(Context.GetOwner(), LogMAStateTree, Verbose, TEXT("EnvQuery result has changed, emitting event %s"), *ResultUpdatedEventTag.GetTagName().ToString());
+				UE_VLOG(Context.GetOwner(), LogMAStateTree, Verbose, TEXT("%s: EnvQuery result has changed, emitting event %s"), *Name.ToString(), *ResultUpdatedEventTag.ToString());
 				Context.SendEvent(ResultUpdatedEventTag);
 			}
 		}
@@ -50,7 +50,7 @@ void FMAStateTreeEnvQueryEvaluator::Tick(FStateTreeExecutionContext& Context, co
 
 		InstanceData.NextUpdate = World->GetTimeSeconds() + (InstanceData.bResult ? TickInterval : RetryCooldown);
 
-		UE_VLOG(Context.GetOwner(), LogMAStateTree, VeryVerbose, TEXT("EnvQuery has finished request id %i (result state: %s)"), InstanceData.RequestId, InstanceData.bResult ? TEXT("true") : TEXT("false"));
+		UE_VLOG(Context.GetOwner(), LogMAStateTree, VeryVerbose, TEXT("%s: EnvQuery has finished request id %i (result state: %s)"), *Name.ToString(), InstanceData.RequestId, InstanceData.bResult ? TEXT("true") : TEXT("false"));
 		InstanceData.RequestId = INDEX_NONE;
 	}
 
@@ -97,7 +97,7 @@ void FMAStateTreeEnvQueryEvaluator::RunQuery(FStateTreeExecutionContext& Context
 
 	if (!IsValid(InstanceData.QueryTemplate) || !IsValid(InstanceData.Owner))
 	{
-		UE_VLOG(Context.GetOwner(), LogMAStateTree, Warning, TEXT("EnvQuery run skipped: invalid query template or owner"));
+		UE_VLOG(Context.GetOwner(), LogMAStateTree, Warning, TEXT("%s: EnvQuery run skipped, invalid query template or owner"), *Name.ToString());
 		InstanceData.NextUpdate = World->GetTimeSeconds() + RetryCooldown;
 
 		if (bClearResultsOnQueryFailure)
@@ -110,9 +110,9 @@ void FMAStateTreeEnvQueryEvaluator::RunQuery(FStateTreeExecutionContext& Context
 		return;
 	}
 
-	auto OnQueryCompleted = [ResultData=InstanceData.ResultData](TSharedPtr<FEnvQueryResult> QueryResult)
+	auto OnQueryCompleted = [NodeName=Name, ResultData=InstanceData.ResultData](TSharedPtr<FEnvQueryResult> QueryResult)
 	{
-		UE_VLOG(QueryResult->Owner.Get(), LogMAStateTree, Verbose, TEXT("EnvQuery request completed with %i items"), QueryResult->Items.Num());
+		UE_VLOG(QueryResult->Owner.Get(), LogMAStateTree, Verbose, TEXT("%s: EnvQuery request completed with %i items"), *NodeName.ToString(), QueryResult->Items.Num());
 
 		ResultData->bFinished = true;
 		ResultData->bResult = false;
@@ -140,7 +140,7 @@ void FMAStateTreeEnvQueryEvaluator::RunQuery(FStateTreeExecutionContext& Context
 
 			if (!ResultData->bResult)
 			{
-				UE_VLOG(QueryResult->Owner.Get(), LogMAStateTree, Warning, TEXT("Failed to retrieve EQS query result (unknown item type %s)"), *GetNameSafe(QueryResult->ItemType));
+				UE_VLOG(QueryResult->Owner.Get(), LogMAStateTree, Warning, TEXT("%s: Failed to retrieve EQS query result (unknown item type %s)"), *NodeName.ToString(), *GetNameSafe(QueryResult->ItemType));
 			}
 		}
 	};
@@ -151,7 +151,7 @@ void FMAStateTreeEnvQueryEvaluator::RunQuery(FStateTreeExecutionContext& Context
 		RunMode,
 		FQueryFinishedSignature::CreateWeakLambda(World, OnQueryCompleted));
 
-	UE_VLOG(Context.GetOwner(), LogMAStateTree, Verbose, TEXT("EnvQuery started request id %i"), InstanceData.RequestId);
+	UE_VLOG(Context.GetOwner(), LogMAStateTree, Verbose, TEXT("%s: EnvQuery started request id %i"), *Name.ToString(), InstanceData.RequestId);
 
 	if (InstanceData.RequestId < 0)
 	{
