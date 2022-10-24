@@ -46,6 +46,7 @@ bool FMAStateTreeEvaluatorTask::Link(FStateTreeLinker& Linker)
 		EvaluatorInst.DataViewIndex = DataViewIndex;
 		EvaluatorInst.InstanceIndex = InstanceIndex;
 		EvaluatorInst.bInstanceIsObject = bInstanceIsObject;
+		EvaluatorInst.Name = Name;
 		return EvaluatorInst.Link(Linker);
 	}
 

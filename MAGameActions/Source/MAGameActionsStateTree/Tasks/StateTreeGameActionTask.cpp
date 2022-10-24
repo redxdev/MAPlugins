@@ -12,25 +12,25 @@ EStateTreeRunStatus FStateTreeGameActionTask::EnterState(FStateTreeExecutionCont
 
 	if (!IsValid(InstanceData.Owner))
 	{
-		UE_VLOG(Context.GetOwner(), LogGameActions, Warning, TEXT("Game action task: invalid owner, failing"));
+		UE_VLOG(Context.GetOwner(), LogGameActions, Warning, TEXT("%s: invalid owner, failing"), *Name.ToString());
 		return EStateTreeRunStatus::Failed;
 	}
 
 	UGameActionComponent* GAComp = UGameActionComponent::GetGameActionComponentFromActor(InstanceData.Owner);
 	if (!IsValid(GAComp))
 	{
-		UE_VLOG(Context.GetOwner(), LogGameActions, Warning, TEXT("Game action task: no UGameActionComponent found, failing"));
+		UE_VLOG(Context.GetOwner(), LogGameActions, Warning, TEXT("%s: no UGameActionComponent found, failing"), *Name.ToString());
 		return EStateTreeRunStatus::Failed;
 	}
 
 	InstanceData.Action = GAComp->ExecuteAction(InstanceData.ActionName);
 	if (!InstanceData.Action)
 	{
-		UE_VLOG(Context.GetOwner(), LogGameActions, Warning, TEXT("Game action task: failed to execute action with tag %s"), *InstanceData.ActionName.ToString());
+		UE_VLOG(Context.GetOwner(), LogGameActions, Warning, TEXT("%s: failed to execute action with tag %s"), *Name.ToString(), *InstanceData.ActionName.ToString());
 		return EStateTreeRunStatus::Failed;
 	}
 
-	UE_VLOG(Context.GetOwner(), LogGameActions, Log, TEXT("Game action task: successfully started action %s"), *GetNameSafe(InstanceData.Action));
+	UE_VLOG(Context.GetOwner(), LogGameActions, Log, TEXT("%s: successfully started action %s"), *GetNameSafe(InstanceData.Action));
 	return CheckGameActionState(Context, InstanceData);
 }
 
@@ -39,7 +39,7 @@ EStateTreeRunStatus FStateTreeGameActionTask::Tick(FStateTreeExecutionContext& C
 	FInstanceDataType& InstanceData = Context.GetInstanceData<FInstanceDataType>(*this);
 	if (!IsValid(InstanceData.Action))
 	{
-		UE_VLOG(Context.GetOwner(), LogGameActions, Warning, TEXT("Game action task: action was invalidated, failing"));
+		UE_VLOG(Context.GetOwner(), LogGameActions, Warning, TEXT("%s: action was invalidated, failing"), *Name.ToString());
 		return EStateTreeRunStatus::Failed;
 	}
 
@@ -68,19 +68,19 @@ EStateTreeRunStatus FStateTreeGameActionTask::CheckGameActionState(FStateTreeExe
 	{
 		if (InstanceData.Action->DidFinishSuccessfully())
 		{
-			UE_VLOG(Context.GetOwner(), LogGameActions, Log, TEXT("Game action task: action %s finished successfully"), *GetNameSafe(InstanceData.Action));
+			UE_VLOG(Context.GetOwner(), LogGameActions, Log, TEXT("%s: action %s finished successfully"), *Name.ToString(), *GetNameSafe(InstanceData.Action));
 			return EStateTreeRunStatus::Succeeded;
 		}
 		else
 		{
-			UE_VLOG(Context.GetOwner(), LogGameActions, Log, TEXT("Game action task: action %s failed"), *GetNameSafe(InstanceData.Action));
+			UE_VLOG(Context.GetOwner(), LogGameActions, Log, TEXT("%s: action %s failed"), *Name.ToString(), *GetNameSafe(InstanceData.Action));
 			return EStateTreeRunStatus::Failed;
 		}
 	}
 
 	if (InstanceData.Action->IsCancelled())
 	{
-		UE_VLOG(Context.GetOwner(), LogGameActions, Log, TEXT("Game action task: action %s was cancelled"), *GetNameSafe(InstanceData.Action));
+		UE_VLOG(Context.GetOwner(), LogGameActions, Log, TEXT("%s: action %s was cancelled"), *Name.ToString(), *GetNameSafe(InstanceData.Action));
 		return EStateTreeRunStatus::Failed;
 	}
 
