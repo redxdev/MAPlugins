@@ -48,6 +48,7 @@ public:
 	TMap<FGameplayTag, FAIState> States;
 
 	virtual void PostInitProperties() override;
+	virtual void PreSave(FObjectPreSaveContext SaveContext) override;
 
 	UFUNCTION(BlueprintCallable, Category = AI)
 	MAGAMEPLAY_API bool ApplyState(UPARAM(meta = (Categories = "AI.State")) FGameplayTag StateTag);
@@ -57,6 +58,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = AI)
 	MAGAMEPLAY_API bool ReapplyActiveState();
+
+	UFUNCTION(BlueprintCallable, Category = AI)
+	MAGAMEPLAY_API FGameplayTag GetCurrentStateTag() const;
 
 private:
 	class UAIStateComponent* GetAIStateComponent() const;
@@ -99,6 +103,7 @@ public:
 	FORCEINLINE FGameplayTag GetCurrentStateTag() const { return CurrentState; }
 
 	virtual void PostInitProperties() override;
+	virtual void PreSave(FObjectPreSaveContext SaveContext) override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -110,6 +115,9 @@ private:
 
 	UFUNCTION()
 	void OnPossessedPawnChanged(APawn* OldPawn, APawn* NewPawn);
+	UFUNCTION()
+	void OnPawnControllerChanged(APawn* Pawn, AController* OldController, AController* NewController);
+
 	void ResolvePawnAIState(APawn* NewPawn);
 
 	UPROPERTY(VisibleAnywhere, Category = "AI State")

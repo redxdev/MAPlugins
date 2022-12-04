@@ -30,7 +30,7 @@ EStateTreeRunStatus FStateTreeGameActionTask::EnterState(FStateTreeExecutionCont
 		return EStateTreeRunStatus::Failed;
 	}
 
-	UE_VLOG(Context.GetOwner(), LogGameActions, Log, TEXT("%s: successfully started action %s"), *GetNameSafe(InstanceData.Action));
+	UE_VLOG(Context.GetOwner(), LogGameActions, Log, TEXT("%s: successfully started action %s"), *Name.ToString(), *GetNameSafe(InstanceData.Action));
 	return CheckGameActionState(Context, InstanceData);
 }
 

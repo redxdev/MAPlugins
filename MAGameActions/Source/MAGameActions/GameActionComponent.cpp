@@ -543,7 +543,7 @@ UGameAction* UGameActionComponent::BeginExecuteAction(TSubclassOf<UGameAction> A
 	{
 		if (!GetOwner() || !GetOwner()->IsA(DefaultAction->WithinActor))
 		{
-			UE_VLOG(GetOwner(), LogGameActions, Warning, TEXT("Action class '%s' refused execution (owner %s is not a %s)"), *ActionClass->GetName(), *GetNameSafe(GetOwner()), *GetNameSafe(DefaultAction->WithinActor));
+			UE_VLOG_UELOG(GetOwner(), LogGameActions, Warning, TEXT("Action class '%s' refused execution (owner %s is not a %s)"), *ActionClass->GetName(), *GetNameSafe(GetOwner()), *GetNameSafe(DefaultAction->WithinActor));
 			return nullptr;
 		}
 	}

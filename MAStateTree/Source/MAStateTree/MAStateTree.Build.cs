@@ -12,22 +12,22 @@ public class MAStateTree : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
+				"AIModule",
 				"Core",
 				"CoreUObject",
 				"Engine",
-				"AIModule",
+				"GameplayStateTreeModule",
+				"GameplayTags",
+				"GameplayTasks",
+				"MAGameplay",
 				"NavigationSystem",
 				"StateTreeModule",
-				"GameplayStateTreeModule",
-				"GameplayTasks",
-				"GameplayTags",
 				"StructUtils",
 			});
 
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"MAGameplay",
 			});
 
 		if (Target.bBuildEditor)

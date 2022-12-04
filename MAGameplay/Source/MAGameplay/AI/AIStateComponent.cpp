@@ -6,6 +6,7 @@
 #include "MAStateTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Components/StateTreeComponent.h"
+#include "UObject/ObjectSaveContext.h"
 #include "VisualLogger/VisualLogger.h"
 
 bool FAIState::IsValid() const
@@ -23,6 +24,29 @@ void UPawnAIStateComponent::PostInitProperties()
 	{
 		UE_LOG(LogMAGameplay, Error, TEXT("%s is not an APawn, cannot own UPawnAIStateComponent %s"), *GetNameSafe(GetOwner()), *GetName());
 	}
+}
+
+void UPawnAIStateComponent::PreSave(FObjectPreSaveContext SaveContext)
+{
+	for (auto& State : States)
+	{
+		switch (State.Value.Mode)
+		{
+		default:
+			checkNoEntry();
+			break;
+
+		case EAIStateMode::BehaviorTree:
+			State.Value.StateTree.SetStateTree(nullptr);
+			break;
+
+		case EAIStateMode::StateTree:
+			State.Value.BehaviorTree = nullptr;
+			break;
+		}
+	}
+
+	Super::PreSave(SaveContext);
 }
 
 bool UPawnAIStateComponent::ApplyState(FGameplayTag StateTag)
@@ -53,6 +77,16 @@ bool UPawnAIStateComponent::ReapplyActiveState()
 	}
 
 	return false;
+}
+
+FGameplayTag UPawnAIStateComponent::GetCurrentStateTag() const
+{
+	if (UAIStateComponent* AIComp = GetAIStateComponent())
+	{
+		return AIComp->GetCurrentStateTag();
+	}
+
+	return FGameplayTag::EmptyTag;
 }
 
 UAIStateComponent* UPawnAIStateComponent::GetAIStateComponent() const
@@ -106,6 +140,29 @@ void UAIStateComponent::PostInitProperties()
 	{
 		UE_LOG(LogMAGameplay, Error, TEXT("%s is not an AAIController, cannot own UAIStateComponent %s"), *GetNameSafe(GetOwner()), *GetName());
 	}
+}
+
+void UAIStateComponent::PreSave(FObjectPreSaveContext SaveContext)
+{
+	for (auto& State : States)
+	{
+		switch (State.Value.Mode)
+		{
+		default:
+			checkNoEntry();
+			break;
+
+		case EAIStateMode::BehaviorTree:
+			State.Value.StateTree.SetStateTree(nullptr);
+			break;
+
+		case EAIStateMode::StateTree:
+			State.Value.BehaviorTree = nullptr;
+			break;
+		}
+	}
+
+	Super::PreSave(SaveContext);
 }
 
 void UAIStateComponent::BeginPlay()
@@ -256,6 +313,8 @@ void UAIStateComponent::OnPossessedPawnChanged(APawn* OldPawn, APawn* NewPawn)
 	PawnAIState = nullptr;
 	if (IsValid(NewPawn))
 	{
+		NewPawn->ReceiveControllerChangedDelegate.AddDynamic(this, &ThisClass::OnPawnControllerChanged);
+
 		ResolvePawnAIState(NewPawn);
 
 		if (!CurrentState.IsValid())
@@ -274,13 +333,19 @@ void UAIStateComponent::OnPossessedPawnChanged(APawn* OldPawn, APawn* NewPawn)
 			ApplyState(DefaultState);
 		}
 	}
-	else
+}
+
+void UAIStateComponent::OnPawnControllerChanged(APawn* Pawn, AController* OldController, AController* NewController)
+{
+	// This used to be handled in OnPossessedPawnChanged, but we need to cancel the current state *before* the controller
+	// has "Pawn" changed to a new value. Otherwise StateTree won't transition out of its current state as it will build
+	// an invalid statetree context that's missing a pawn.
+	if (bResetStateWhenUnpossessed)
 	{
-		if (bResetStateWhenUnpossessed)
-		{
-			ApplyState(FGameplayTag::EmptyTag);
-		}
+		CancelState();
 	}
+
+	Pawn->ReceiveControllerChangedDelegate.RemoveAll(this);
 }
 
 void UAIStateComponent::ResolvePawnAIState(APawn* NewPawn)
